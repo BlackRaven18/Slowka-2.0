@@ -42,6 +42,8 @@
                      <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
                         <Label alignment="CENTER" prefHeight="27.0" prefWidth="162.0" text="słówko:" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
@@ -67,6 +69,28 @@
                               <Font name="System Bold" size="18.0" />
                            </font>
                         </Label>
+                        <Label alignment="CENTER" prefHeight="27.0" prefWidth="151.0" text="rodzaj:" GridPane.rowIndex="2">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label alignment="CENTER" prefHeight="27.0" prefWidth="162.0" text="kategoria" GridPane.rowIndex="3">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <MenuButton mnemonicParsing="false" text="Rzeczownik" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                          <items>
+                            <MenuItem mnemonicParsing="false" text="Rzeczownik" />
+                            <MenuItem mnemonicParsing="false" text="Czasownik" />
+                          </items>
+                        </MenuButton>
+                        <MenuButton mnemonicParsing="false" text="Natura" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                           <items>
+                              <MenuItem mnemonicParsing="false" text="Natura" />
+                              <MenuItem mnemonicParsing="false" text="Ludzie" />
+                           </items>
+                        </MenuButton>
                      </children>
                   </GridPane>
                   <fx:include source="spanish-accents-box.fxml" />
@@ -103,6 +127,8 @@
                      <columns>
                         <TableColumn fx:id="wordsColumn" prefWidth="204.0" text="Słówko" />
                         <TableColumn fx:id="translationsColumn" prefWidth="202.0" text="Tłumaczenie" />
+                        <TableColumn fx:id="translationsColumn1" prefWidth="202.0" text="Rodzaj" />
+                        <TableColumn fx:id="translationsColumn11" prefWidth="202.0" text="Kategoria" />
                      </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
