@@ -5,6 +5,10 @@ import com.arek.database_utils.DatabaseResponse;
 import com.arek.database_utils.WordAndTranslation;
 import com.arek.language_learning_app.AppOptions;
 import com.arek.language_learning_app.TranslationOrder;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -23,11 +27,14 @@ public class AddNewWordsTabController implements Initializable {
 
     @FXML private Label messageLabel;
     @FXML private MenuButton selectLanguageMenu;
-    @FXML private TextField wordField, translationField;
+    @FXML private TextField wordField, translationField, searchField;
 
     @FXML private TableView<WordAndTranslation> wordsAndTranslationsTable;
     @FXML private TableColumn<WordAndTranslation, String> wordsColumn;
     @FXML private TableColumn<WordAndTranslation, String> translationsColumn;
+
+    ObservableList<WordAndTranslation> wordAndTranslationObservableList;
+    FilteredList<WordAndTranslation> filteredData;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -48,14 +55,54 @@ public class AddNewWordsTabController implements Initializable {
         wordsAndTranslationsTable.getItems().clear();
         ArrayList<WordAndTranslation> wordAndTranslationList = DatabaseQueryManager.getWordsAndTranslationsAsList(TranslationOrder.NORMAL);
 
+        wordAndTranslationObservableList = FXCollections.observableArrayList(wordAndTranslationList);
+
         wordsColumn.setCellValueFactory(new PropertyValueFactory<>("word"));
         translationsColumn.setCellValueFactory(new PropertyValueFactory<>("translation"));
 
-        for(WordAndTranslation element : wordAndTranslationList){
-            wordsAndTranslationsTable.getItems().add(element);
-        }
+
+        //wordsAndTranslationsTable.setItems(wordAndTranslationObservableList);
+
+        filteredData = new FilteredList<>(wordAndTranslationObservableList, b -> true);
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(wordAndTranslation -> {
+
+                //if no search value then display all records
+                if(newValue.isEmpty() || newValue.isBlank()){
+                    return true;
+                }
+
+                String searchKeyword = newValue.toLowerCase();
+
+                if(wordAndTranslation.getWord().toLowerCase().contains(searchKeyword.trim())){
+                    System.out.println(wordAndTranslation.getWord().toLowerCase());
+                    return true;// means we found a match in word name
+                } else if(wordAndTranslation.getTranslation().toLowerCase().contains(searchKeyword.trim())){
+                    return true;
+                } else {
+                    return false;
+                }
+
+            });
+        });
+        SortedList<WordAndTranslation> sortedData = new SortedList<>(filteredData);
+
+        //Bind sorted result with Table View
+        sortedData.comparatorProperty().bind(wordsAndTranslationsTable.comparatorProperty());
+
+        //apply filtered and sorted data to the Table View
+        ObservableList<WordAndTranslation> tmpObservableList = FXCollections.observableArrayList(sortedData);
+        wordsAndTranslationsTable.setItems(tmpObservableList);
+        System.out.println(tmpObservableList.size());
+
+        //wordsAndTranslationsTable.setItems(sortedData);
 
         wordsAndTranslationsTable.refresh();
+    }
+
+    @FXML
+    public void updateTableWithSearchResult(){
+        wordsAndTranslationsTable.setItems(FXCollections.observableArrayList(filteredData));
     }
 
     @FXML
