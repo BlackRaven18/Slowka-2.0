@@ -15,6 +15,13 @@
          <content>
              <fx:include fx:id="addNewWordsTab" source="add-words-tab-view.fxml" />
          </content></Tab>
+      <Tab onSelectionChanged="#onOptionsTabChange" text="Gramatyka">
+        <content>
+            <fx:include fx:id="grammarTab" source="grammar-tab.fxml"/>
+        </content>
+
+      </Tab>
+
       <Tab onSelectionChanged="#onMergeDatabasesTabChange" text="Połącz bazy słówek">
         <content>
           <fx:include fx:id="mergeDatabasesTab" source="merge-databases-tab-view.fxml" />
