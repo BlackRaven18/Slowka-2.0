@@ -177,7 +177,7 @@ public class DatabaseQueryManager {
 
         } else {
             //adding new word with translation
-            addNewWord(wordDetails.getWord());
+            addNewWord(wordDetails);
             newWordId = getWordId(wordDetails.getWord());
             addNewTranslation(newWordId, wordDetails.getTranslation());
         }
@@ -185,9 +185,13 @@ public class DatabaseQueryManager {
         return DatabaseResponse.DB_OK;
     }
 
-    private static void addNewWord(String word){
+    private static void addNewWord(WordDetails wordDetails){
         int newWordId = getNewWordId();
-        String query = String.format("INSERT INTO SLOWO VALUES(%d, '%s');", newWordId, word);
+        int typeId = getTypeId(wordDetails.getType());
+        int categoryId = getCategoryId(wordDetails.getCategory());
+
+        String query = String.format("INSERT INTO SLOWO VALUES(%d, '%s', %d, %d);",
+                newWordId, wordDetails.getWord(), typeId, categoryId);
 
         executeQuery(query);
     }
