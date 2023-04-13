@@ -138,47 +138,48 @@ public class DatabaseQueryManager {
         return wordsAndTranslations;
     }
 
-    public static ArrayList<WordAndTranslation> getWordsAndTranslationsAsList(TranslationOrder order){
-        ArrayList<WordAndTranslation> wordAndTranslationList = new ArrayList<>();
+    public static ArrayList<WordDetails> getWordDetailsAsList(){
+        ArrayList<WordDetails> wordDetailsList = new ArrayList<>();
         QueryResult queryResult;
 
-        String query;
-
-        if(order == TranslationOrder.NORMAL){
-            query = GET_WORDS_WITH_TRANSLATIONS;
-        } else {
-            query = GET_WORDS_WITH_TRANSLATIONS_REVERSE;
-        }
+        String query = "SELECT s.slowo, tl.tlumaczenie, typ.typ, kat.kategoria " +
+                "FROM SLOWO s, TLUMACZENIE tl, TYP typ, KATEGORIA kat " +
+                "WHERE s.id_slowa = tl.id_slowa " +
+                "    AND s.id_typu = typ.id_typu" +
+                "    AND s.id_kategorii = kat.id_kategorii;";
 
         queryResult = getQueryResult(query);
         for(int i = 0; i < queryResult.getQueryLines(); i++){
             String word = queryResult.getQueryLine(i).get(0);
             String translation = queryResult.getQueryLine(i).get(1);
-            wordAndTranslationList.add(new WordAndTranslation(word, translation));
+            String type = queryResult.getQueryLine(i).get(2);
+            String category = queryResult.getQueryLine(i).get(3);
+
+            wordDetailsList.add(new WordDetails(word, translation, type, category));
         }
-        return wordAndTranslationList;
+        return wordDetailsList;
     }
 
-    public static DatabaseResponse addWordWithTranslation(WordAndTranslation wordWithTranslation){
+    public static DatabaseResponse addWordDetails(WordDetails wordDetails){
 
         int newWordId;
 
         //if word is in database
-        if(isWordInDatabase(wordWithTranslation.getWord())){
-            newWordId = getWordId(wordWithTranslation.getWord());
+        if(isWordInDatabase(wordDetails.getWord())){
+            newWordId = getWordId(wordDetails.getWord());
 
             //if translation is in database
-            if(isTranslationInDatabase(newWordId, wordWithTranslation.getTranslation())){
+            if(isTranslationInDatabase(newWordId, wordDetails.getTranslation())){
                 return DatabaseResponse.DB_ALREADY_IN;
             }
             // adding new translations to the existing word
-            addNewTranslation(newWordId, wordWithTranslation.getTranslation());
+            addNewTranslation(newWordId, wordDetails.getTranslation());
 
         } else {
             //adding new word with translation
-            addNewWord(wordWithTranslation.getWord());
-            newWordId = getWordId(wordWithTranslation.getWord());
-            addNewTranslation(newWordId, wordWithTranslation.getTranslation());
+            addNewWord(wordDetails.getWord());
+            newWordId = getWordId(wordDetails.getWord());
+            addNewTranslation(newWordId, wordDetails.getTranslation());
         }
 
         return DatabaseResponse.DB_OK;
@@ -198,17 +199,17 @@ public class DatabaseQueryManager {
         executeQuery(query);
     }
 
-    public static DatabaseResponse deleteWordWithTranslation(WordAndTranslation wordAndTranslation){
-        WordAndTranslationRowNumbers wordAndTranslationRowNumbers = getWordAndTranslationRowsNumbers(wordAndTranslation);
+    public static DatabaseResponse deleteWordDetails(WordDetails wordDetails){
+        WordDetailsRowNumbers wordDetailsRowNumbers = getWordDetailsRowsNumbers(wordDetails);
 
-        if(wordAndTranslationRowNumbers == null){
+        if(wordDetailsRowNumbers == null){
             return DatabaseResponse.DB_NOT_FOUND;
         }
 
-        String deleteTranslationQuery = String.format("DELETE FROM TLUMACZENIE WHERE ROWID = %d;", wordAndTranslationRowNumbers.gettranslationRowNumber());
-        String deleteWordQuery = String.format("DELETE FROM SLOWO WHERE ROWID = %d;", wordAndTranslationRowNumbers.getWordRowNumber());
+        String deleteTranslationQuery = String.format("DELETE FROM TLUMACZENIE WHERE ROWID = %d;", wordDetailsRowNumbers.gettranslationRowNumber());
+        String deleteWordQuery = String.format("DELETE FROM SLOWO WHERE ROWID = %d;", wordDetailsRowNumbers.getWordRowNumber());
 
-        int numberOfWordTranslations = getWordNumberOfTranslations(wordAndTranslation.getWord());
+        int numberOfWordTranslations = getWordNumberOfTranslations(wordDetails.getWord());
 
         executeQuery(deleteTranslationQuery);
         if(numberOfWordTranslations == 1){
@@ -218,20 +219,35 @@ public class DatabaseQueryManager {
         return DatabaseResponse.DB_OK;
     }
 
-    public static DatabaseResponse changeWordWithTranslation(WordAndTranslation oldWordAndTranslation, WordAndTranslation newWordAndTranslation) {
-        WordAndTranslationRowNumbers wordAndTranslationRowNumbers = getWordAndTranslationRowsNumbers(oldWordAndTranslation);
+    public static DatabaseResponse changeWordDetails(WordDetails oldWordDetails, WordDetails newWordDetails) {
+        WordDetailsRowNumbers wordDetailsRowNumbers = getWordDetailsRowsNumbers(oldWordDetails);
 
-        if(wordAndTranslationRowNumbers == null){
+        if(wordDetailsRowNumbers == null){
             return DatabaseResponse.DB_NOT_FOUND;
         }
 
+        int newTypeId = getTypeId(newWordDetails.getType());
+        int newCategoryId = getCategoryId(newWordDetails.getCategory());
+
+        //zapytania zwracające id typu i id kategorii o danej nazwie
+
         String changeWordQuery = String.format("UPDATE SLOWO SET slowo = '%s' WHERE ROWID = %d;",
-                newWordAndTranslation.getWord(), wordAndTranslationRowNumbers.getWordRowNumber());
+                newWordDetails.getWord(), wordDetailsRowNumbers.getWordRowNumber());
+
+        String changeTypeQuery = String.format("UPDATE SLOWO SET id_typu = %d WHERE ROWID = %d;",
+                newTypeId, wordDetailsRowNumbers.getWordRowNumber());
+        String changeCategoryQuery = String.format("UPDATE SLOWO SET id_kategorii = %d WHERE ROWID = %d;",
+                newCategoryId, wordDetailsRowNumbers.getWordRowNumber());
+
         String changeTranslationQuery = String.format("UPDATE TLUMACZENIE SET tlumaczenie = '%s' WHERE ROWID = %d;",
-                newWordAndTranslation.getTranslation(), wordAndTranslationRowNumbers.gettranslationRowNumber());
+                newWordDetails.getTranslation(), wordDetailsRowNumbers.gettranslationRowNumber());
 
         executeQuery(changeWordQuery);
+        executeQuery(changeTypeQuery);
+        executeQuery(changeCategoryQuery);
         executeQuery(changeTranslationQuery);
+
+
         return DatabaseResponse.DB_OK;
     }
 
@@ -246,13 +262,13 @@ public class DatabaseQueryManager {
         return Integer.parseInt(queryResult.getQueryLine(0).get(0));
     }
 
-    public static WordAndTranslationRowNumbers getWordAndTranslationRowsNumbers(WordAndTranslation wordAndTranslation){
+    public static WordDetailsRowNumbers getWordDetailsRowsNumbers(WordDetails wordDetails){
         String query = String.format("SELECT sl.ROWID, tl.ROWID " +
                 "FROM SLOWO sl, TLUMACZENIE tl " +
                 "WHERE sl.id_slowa = tl.id_slowa " +
                 "AND sl.slowo = '%s' " +
                 "AND tl.tlumaczenie = '%s';",
-                wordAndTranslation.getWord(), wordAndTranslation.getTranslation());
+                wordDetails.getWord(), wordDetails.getTranslation());
 
         QueryResult queryResult = getQueryResult(query);
 
@@ -260,8 +276,30 @@ public class DatabaseQueryManager {
             return null;
         }
 
-        return new WordAndTranslationRowNumbers(Integer.parseInt(queryResult.getQueryLine(0).get(0)),
+        return new WordDetailsRowNumbers(Integer.parseInt(queryResult.getQueryLine(0).get(0)),
                 Integer.parseInt(queryResult.getQueryLine(0).get(1)));
+    }
+
+    public static int getTypeId(String type){
+        String query = String.format("SELECT id_typu FROM TYP WHERE typ = \"%s\";", type);
+        QueryResult queryResult = getQueryResult(query);
+
+        if(!queryResult.isEmpty()){
+            return Integer.parseInt(queryResult.getQueryLine(0).get(0));
+        } else {
+            return -1;
+        }
+    }
+
+    public static int getCategoryId(String category){
+        String query = String.format("SELECT id_kategorii FROM KATEGORIA WHERE kategoria = \"%s\";", category);
+        QueryResult queryResult = getQueryResult(query);
+
+        if(!queryResult.isEmpty()){
+            return Integer.parseInt(queryResult.getQueryLine(0).get(0));
+        } else {
+            return -1;
+        }
     }
 
 

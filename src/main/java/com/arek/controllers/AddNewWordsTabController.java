@@ -2,7 +2,7 @@ package com.arek.controllers;
 
 import com.arek.database_utils.DatabaseQueryManager;
 import com.arek.database_utils.DatabaseResponse;
-import com.arek.database_utils.WordAndTranslation;
+import com.arek.database_utils.WordDetails;
 import com.arek.language_learning_app.AppOptions;
 import com.arek.language_learning_app.TranslationOrder;
 import javafx.collections.FXCollections;
@@ -29,12 +29,15 @@ public class AddNewWordsTabController implements Initializable {
     @FXML private MenuButton selectLanguageMenu, typeButton, categoryButton;
     @FXML private TextField wordField, translationField, searchField;
 
-    @FXML private TableView<WordAndTranslation> wordsAndTranslationsTable;
-    @FXML private TableColumn<WordAndTranslation, String> wordsColumn;
-    @FXML private TableColumn<WordAndTranslation, String> translationsColumn;
+    @FXML private TableView<WordDetails> wordsAndTranslationsTable;
+    @FXML private TableColumn<WordDetails, String> wordsColumn;
+    @FXML private TableColumn<WordDetails, String> translationsColumn;
+    @FXML private TableColumn<WordDetails, String> typeColumn;
+    @FXML private TableColumn<WordDetails, String> categoryColumn;
 
-    ObservableList<WordAndTranslation> wordAndTranslationObservableList;
-    FilteredList<WordAndTranslation> filteredData;
+
+    ObservableList<WordDetails> wordDetailsObservableList;
+    FilteredList<WordDetails> filteredData;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -55,17 +58,19 @@ public class AddNewWordsTabController implements Initializable {
         options = AppOptions.getInstance();
 
         wordsAndTranslationsTable.getItems().clear();
-        ArrayList<WordAndTranslation> wordAndTranslationList = DatabaseQueryManager.getWordsAndTranslationsAsList(TranslationOrder.NORMAL);
+        ArrayList<WordDetails> wordDetailsList = DatabaseQueryManager.getWordDetailsAsList();
 
-        wordAndTranslationObservableList = FXCollections.observableArrayList(wordAndTranslationList);
+        wordDetailsObservableList = FXCollections.observableArrayList(wordDetailsList);
 
         wordsColumn.setCellValueFactory(new PropertyValueFactory<>("word"));
         translationsColumn.setCellValueFactory(new PropertyValueFactory<>("translation"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
 
-        //wordsAndTranslationsTable.setItems(wordAndTranslationObservableList);
+        //wordsAndTranslationsTable.setItems(wordDetailsObservableList);
 
-        filteredData = new FilteredList<>(wordAndTranslationObservableList, b -> true);
+        filteredData = new FilteredList<>(wordDetailsObservableList, b -> true);
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(wordAndTranslation -> {
 
@@ -87,13 +92,13 @@ public class AddNewWordsTabController implements Initializable {
 
             });
         });
-        SortedList<WordAndTranslation> sortedData = new SortedList<>(filteredData);
+        SortedList<WordDetails> sortedData = new SortedList<>(filteredData);
 
         //Bind sorted result with Table View
         sortedData.comparatorProperty().bind(wordsAndTranslationsTable.comparatorProperty());
 
         //apply filtered and sorted data to the Table View
-        ObservableList<WordAndTranslation> tmpObservableList = FXCollections.observableArrayList(sortedData);
+        ObservableList<WordDetails> tmpObservableList = FXCollections.observableArrayList(sortedData);
         wordsAndTranslationsTable.setItems(tmpObservableList);
         System.out.println(tmpObservableList.size());
 
@@ -145,22 +150,25 @@ public class AddNewWordsTabController implements Initializable {
     }
     @FXML
     private void selectWordTranslationTableRow(){
-        WordAndTranslation selectedWordWithTranslation = getSelectedWordWithTranslation();
+        WordDetails selectedWordWithTranslation = getSelectedWordWithTranslation();
 
         if(selectedWordWithTranslation != null) {
             wordField.setText(selectedWordWithTranslation.getWord());
             translationField.setText(selectedWordWithTranslation.getTranslation());
+            typeButton.setText(selectedWordWithTranslation.getType());
+            categoryButton.setText(selectedWordWithTranslation.getCategory());
         }
     }
 
-    private WordAndTranslation getSelectedWordWithTranslation(){
+    private WordDetails getSelectedWordWithTranslation(){
         int index = wordsAndTranslationsTable.getSelectionModel().getSelectedIndex();
 
         if(index < 0){
             return null;
         }
 
-        return new WordAndTranslation(wordsColumn.getCellData(index), translationsColumn.getCellData(index));
+        return new WordDetails(wordsColumn.getCellData(index), translationsColumn.getCellData(index),
+                    typeColumn.getCellData(index), categoryColumn.getCellData(index));
     }
 
 
@@ -169,7 +177,8 @@ public class AddNewWordsTabController implements Initializable {
         trimTextFieldsContent();
 
         if(!wordField.getText().isEmpty() && !translationField.getText().isEmpty()) {
-            if(DatabaseQueryManager.addWordWithTranslation(new WordAndTranslation(wordField.getText(), translationField.getText()))
+            if(DatabaseQueryManager.addWordDetails(
+                    new WordDetails(wordField.getText(), translationField.getText(), typeButton.getText(), categoryButton.getText()))
                 == DatabaseResponse.DB_ALREADY_IN){
                 setMessageLabel(Color.BLACK, "Słówko z tym tłumaczeniem jest już w bazie");
                 return;
@@ -193,7 +202,8 @@ public class AddNewWordsTabController implements Initializable {
         trimTextFieldsContent();
 
         if(!wordField.getText().isEmpty() && !translationField.getText().isEmpty()){
-            if(DatabaseQueryManager.deleteWordWithTranslation(new WordAndTranslation(wordField.getText(), translationField.getText()))
+            if(DatabaseQueryManager.deleteWordDetails(
+                    new WordDetails(wordField.getText(), translationField.getText(), typeButton.getText(), categoryButton.getText()))
                     == DatabaseResponse.DB_NOT_FOUND){
                 setMessageLabel(Color.RED, "Nie znaleziono takiego słówka lub tłumaczenia!");
                 return;
@@ -213,15 +223,18 @@ public class AddNewWordsTabController implements Initializable {
         trimTextFieldsContent();
 
         if(!wordField.getText().isEmpty() && !translationField.getText().isEmpty()){
-            WordAndTranslation oldWordAndTranslation = getSelectedWordWithTranslation();
+            WordDetails oldWordAndTranslation = getSelectedWordWithTranslation();
             if(oldWordAndTranslation == null){
                 setMessageLabel(Color.RED, "Najpierw wybierz słówko z listy!");
                 return;
             }
 
-            WordAndTranslation newWordAndTranslation = new WordAndTranslation(wordField.getText(), translationField.getText());
+            WordDetails newWordAndTranslation = new WordDetails(
+                    wordField.getText(), translationField.getText()
+                    , typeButton.getText(), categoryButton.getText());
 
-            if(DatabaseQueryManager.changeWordWithTranslation(oldWordAndTranslation, newWordAndTranslation) == DatabaseResponse.DB_NOT_FOUND){
+            if(DatabaseQueryManager.changeWordDetails(oldWordAndTranslation, newWordAndTranslation)
+                    == DatabaseResponse.DB_NOT_FOUND){
                 setMessageLabel(Color.RED, "Nie znaleziono takiego słówka!");
                 return;
             }
