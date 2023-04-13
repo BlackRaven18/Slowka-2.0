@@ -82,7 +82,6 @@ public class AddNewWordsTabController implements Initializable {
                 String searchKeyword = newValue.toLowerCase();
 
                 if(wordAndTranslation.getWord().toLowerCase().contains(searchKeyword.trim())){
-                    System.out.println(wordAndTranslation.getWord().toLowerCase());
                     return true;// means we found a match in word name
                 } else if(wordAndTranslation.getTranslation().toLowerCase().contains(searchKeyword.trim())){
                     return true;
@@ -100,7 +99,6 @@ public class AddNewWordsTabController implements Initializable {
         //apply filtered and sorted data to the Table View
         ObservableList<WordDetails> tmpObservableList = FXCollections.observableArrayList(sortedData);
         wordsAndTranslationsTable.setItems(tmpObservableList);
-        System.out.println(tmpObservableList.size());
 
         //wordsAndTranslationsTable.setItems(sortedData);
 
