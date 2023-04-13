@@ -25,6 +25,8 @@ public class TranslationTabController implements Initializable {
 
     private AppOptions options;
 
+    @FXML private SpanishAccentsBoxController spanishAccentsBoxController;
+
     @FXML private Label wordLabel, messageLabel, translationOrderLabel, clockLabel;
     @FXML private Tooltip wordLabelTooltip;
     @FXML private TextField translationField;
@@ -165,6 +167,7 @@ public class TranslationTabController implements Initializable {
         wordAndTranslationsManager.selectSpanishLanguage();
         updateSelectLanguageMenu();
         loadWordLabel();
+        spanishAccentsBoxController.setVisible(true);
     }
 
     @FXML
@@ -174,6 +177,7 @@ public class TranslationTabController implements Initializable {
         wordAndTranslationsManager.selectEnglishLanguage();
         updateSelectLanguageMenu();
         loadWordLabel();
+        spanishAccentsBoxController.setVisible(false);
     }
 
     private void setMessageLabel(Color color, String text){

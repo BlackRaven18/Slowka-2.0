@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.text.Font?>
 
-<FlowPane alignment="TOP_CENTER" columnHalignment="CENTER" hgap="5.0" prefHeight="58.0" prefWidth="424.0" vgap="1.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.SpanishAccentsBoxController">
+<FlowPane fx:id="spanishAccentsBox" alignment="TOP_CENTER" columnHalignment="CENTER" hgap="5.0" prefHeight="58.0" prefWidth="424.0" vgap="1.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.SpanishAccentsBoxController">
    <children>
       <Button fx:id="firstAccentButton" mnemonicParsing="false" onAction="#insertFirstAccent" prefHeight="25.0" prefWidth="25.0" text="á">
          <font>

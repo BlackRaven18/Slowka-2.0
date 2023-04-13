@@ -23,7 +23,9 @@ import java.util.ResourceBundle;
 
 public class AddNewWordsTabController implements Initializable {
 
-   private AppOptions options;
+    private AppOptions options;
+
+    @FXML private SpanishAccentsBoxController spanishAccentsBoxController;
 
     @FXML private Label messageLabel;
     @FXML private MenuButton selectLanguageMenu, typeButton, categoryButton;
@@ -137,6 +139,7 @@ public class AddNewWordsTabController implements Initializable {
     public void selectSpanishLanguage(){
         selectLanguageMenu.setText("Hiszpański");
         DatabaseQueryManager.changeToSpanish();
+        spanishAccentsBoxController.setVisible(true);
         initiateWordsAndTranslationsTableView();
     }
 
@@ -144,6 +147,7 @@ public class AddNewWordsTabController implements Initializable {
     public void selectEnglishLanguage(){
         selectLanguageMenu.setText("Angielski");
         DatabaseQueryManager.changeToEnglish();
+        spanishAccentsBoxController.setVisible(false);
         initiateWordsAndTranslationsTableView();
     }
     @FXML

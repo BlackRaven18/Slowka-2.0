@@ -82,4 +82,18 @@ public class SpanishAccentsBoxController implements Initializable {
     public void setFocusedTextField(TextField focusedTextField) {
         this.focusedTextField = focusedTextField;
     }
+
+    public void setVisible(boolean visible){
+            firstAccentButton.setVisible(visible);
+            secondAccentButton.setVisible(visible);
+            thirdAccentButton.setVisible(visible);
+            fourthAccentButton.setVisible(visible);
+            fifthAccentButton.setVisible(visible);
+            sixthAccentButton.setVisible(visible);
+            seventhAccentButton.setVisible(visible);
+            eighthAccentButton.setVisible(visible);
+            ninthAccentButton.setVisible(visible);
+            upperCaseAccentsCheckBox.setVisible(visible);
+
+    }
 }
