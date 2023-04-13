@@ -26,7 +26,7 @@ public class AddNewWordsTabController implements Initializable {
    private AppOptions options;
 
     @FXML private Label messageLabel;
-    @FXML private MenuButton selectLanguageMenu;
+    @FXML private MenuButton selectLanguageMenu, typeButton, categoryButton;
     @FXML private TextField wordField, translationField, searchField;
 
     @FXML private TableView<WordAndTranslation> wordsAndTranslationsTable;
@@ -42,6 +42,8 @@ public class AddNewWordsTabController implements Initializable {
         messageLabel.setText("");
 
         initiateWordsAndTranslationsTableView();
+        initializeTypeButton();
+        initializeCategoryButton();
     }
 
     public void resetTab(){
@@ -98,6 +100,29 @@ public class AddNewWordsTabController implements Initializable {
         //wordsAndTranslationsTable.setItems(sortedData);
 
         wordsAndTranslationsTable.refresh();
+    }
+
+    private void initializeTypeButton(){
+        typeButton.setText("Rzeczownik");
+
+        typeButton.getItems().add(createMenuButtonItem("Rzeczownik", typeButton));
+        typeButton.getItems().add(createMenuButtonItem("Czasownik", typeButton));
+        typeButton.getItems().add(createMenuButtonItem("Przymiotnik", typeButton));
+    }
+
+    private void initializeCategoryButton(){
+        categoryButton.setText("Natura");
+
+        categoryButton.getItems().add(createMenuButtonItem("Natura", categoryButton));
+        categoryButton.getItems().add(createMenuButtonItem("Zwierzęta", categoryButton));
+        categoryButton.getItems().add(createMenuButtonItem("Jedzenie", categoryButton));
+    }
+
+    private MenuItem createMenuButtonItem(String text, MenuButton parent){
+        MenuItem item = new MenuItem(text);
+        item.setOnAction(event -> parent.setText(item.getText()));
+
+        return item;
     }
 
     @FXML
