@@ -4,6 +4,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.web.WebView?>
 
 <Accordion fx:id="grammarTab" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.GrammarTabController">
   <panes>
@@ -18,7 +19,10 @@
     </TitledPane>
       <TitledPane prefHeight="200.0" prefWidth="200.0">
          <content>
-            <ScrollPane fx:id="sitePane" prefHeight="200.0" prefWidth="200.0" />
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+               <content>
+                  <WebView fx:id="browser" prefHeight="200.0" prefWidth="200.0" />
+               </content></ScrollPane>
          </content>
       </TitledPane>
   </panes>
