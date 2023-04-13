@@ -1,12 +1,12 @@
 package com.arek.database_utils;
 
-public class WordAndTranslationRowNumbers {
+public class WordDetailsRowNumbers {
     int wordRowNumber;
     int translationRowNumber;
 
-    public WordAndTranslationRowNumbers(){}
+    public WordDetailsRowNumbers(){}
 
-    public WordAndTranslationRowNumbers(int wordRowNumber, int translationRowNumber){
+    public WordDetailsRowNumbers(int wordRowNumber, int translationRowNumber){
         this.wordRowNumber = wordRowNumber;
         this.translationRowNumber = translationRowNumber;
     }
