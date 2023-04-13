@@ -2,6 +2,7 @@
 module com.arek{
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.web;
 
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;

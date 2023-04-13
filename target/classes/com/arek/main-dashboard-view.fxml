@@ -17,7 +17,7 @@
          </content></Tab>
       <Tab onSelectionChanged="#onOptionsTabChange" text="Gramatyka">
         <content>
-            <fx:include fx:id="grammarTab" source="grammar-tab.fxml"/>
+            <fx:include fx:id="grammarTab" source="grammar-tab-view.fxml"/>
         </content>
 
       </Tab>
