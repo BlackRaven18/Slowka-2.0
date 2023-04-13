@@ -83,7 +83,7 @@
                         <MenuButton fx:id="categoryButton" mnemonicParsing="false" text="Natura" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                      </children>
                   </GridPane>
-                  <fx:include source="spanish-accents-box.fxml" />
+                  <fx:include fx:id="spanishAccentsBox" source="spanish-accents-box.fxml" />
                   <HBox alignment="CENTER" spacing="30.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#addNewWord" styleClass="add_button" stylesheets="@styles.css" text="Dodaj" />
