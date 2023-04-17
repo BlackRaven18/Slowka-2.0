@@ -4,7 +4,6 @@ module com.arek{
     requires javafx.fxml;
     requires javafx.web;
 
-    requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
     requires FXTrayIcon;
     requires java.sql;
