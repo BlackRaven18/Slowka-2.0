@@ -17,7 +17,7 @@ import javafx.scene.text.FontWeight;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 
@@ -125,7 +125,23 @@ public class GrammarExercisesTabController implements Initializable {
 
     private void fillExamplesPane(){
 
-        for(int i = 0; i < NUMBER_OF_EXAMPLES; i++){
+        int i = 0;
+        Random randomGenerator = new Random();
+
+        while(i < NUMBER_OF_EXAMPLES){
+            if(!exercisesList.isEmpty()){
+                int randomNumber = randomGenerator.nextInt(exercisesList.size() - 1);
+                TaskEntry entry = new TaskEntry(String.valueOf(i + 1), exercisesList.get(randomNumber));
+                taskEntryList.add(entry);
+                examplesPane.add(entry.getEntryContainer(), 0, i);
+                exercisesList.remove(randomNumber);
+            }else{
+                fillExercisesList();
+                --i;
+            }
+            i++;
+        }
+        /*for(int i = 0; i < NUMBER_OF_EXAMPLES; i++){
             if(!exercisesList.isEmpty()){
                 TaskEntry entry = new TaskEntry(String.valueOf(i + 1), exercisesList.get(i));
                 taskEntryList.add(entry);
@@ -133,7 +149,8 @@ public class GrammarExercisesTabController implements Initializable {
             }else{
                 fillExercisesList();
             }
-        }
+
+        }*/
     }
 
 
