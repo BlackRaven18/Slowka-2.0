@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -63,11 +65,13 @@ class TaskEntry{
                 exerciseData.getCorrectAnswer().toLowerCase().trim());
     }
 
-    public void checkAnswer(){
+    public boolean checkAnswer(){
         if(isAnswerCorrect()){
             answerField.setStyle("-fx-background-color: rgba(0,255,0,0.5);");
+            return true;
         } else{
             answerField.setStyle("-fx-background-color: rgba(255,0,0,0.5);");
+            return false;
         }
     }
 
@@ -130,24 +134,34 @@ public class GrammarExercisesTabController implements Initializable {
                 fillExercisesList();
             }
         }
-
-        /*HBox firstExample = getExampleContainer("1", "The shops in poland",
-                "very early", taskEntryList.get(0));
-
-        HBox secondExample = getExampleContainer("2", "Shops in poland",
-                "very late", taskEntryList.get(1));
-
-        examplesPane.add(firstExample, 0, 0);
-        examplesPane.add(secondExample, 0, 1);*/
     }
 
 
 
     @FXML
     public void checkAnswers(){
+        int wrongAnswersCounter = 0;
+
         for(TaskEntry task : taskEntryList){
-            task.checkAnswer();
+            if(!task.checkAnswer()){
+                wrongAnswersCounter++;
+            }
         }
+
+        if(wrongAnswersCounter > 0){
+            setMessageLabel(Color.RED, "Znaleziono błędy");
+        } else{
+            setMessageLabel(Color.GREEN, "Wszystkie odpowiedzi są poprawne!");
+        }
+    }
+
+    @FXML
+    public void handleKeyPressedEvents(KeyEvent event){
+
+        if(event.getCode().equals(KeyCode.ENTER)){
+            checkAnswers();
+        }
+
     }
 
     private void setMessageLabel(Color color, String text){
