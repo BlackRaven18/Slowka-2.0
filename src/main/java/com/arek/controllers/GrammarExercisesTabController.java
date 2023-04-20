@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -29,14 +30,23 @@ class GrammarTask{
     public GrammarTask(String correctAnswer){
         this.answerField = new TextField();
         this.correctAnswer = new Label(
-                new StringBuilder().append("(").append(correctAnswer).append(")").toString());
+                new StringBuilder().append("").append(correctAnswer).append("").toString());
         this.correctAnswer.setFont(Font.font("Calibri", FontWeight.BOLD, 14));
     }
 
-    public boolean isCorrect(){
+    private boolean isAnswerCorrect(){
         return answerField.getText().toLowerCase().trim().equals(
                 correctAnswer.getText().toLowerCase().trim());
     }
+
+    public void checkAnswer(){
+        if(isAnswerCorrect()){
+            answerField.setStyle("-fx-background-color: rgba(0,255,0,0.5);");
+        } else{
+            answerField.setStyle("-fx-background-color: rgba(255,0,0,0.5);");
+        }
+    }
+
 
     public TextField getAnswerField() {
         return answerField;
@@ -58,6 +68,9 @@ class GrammarTask{
 public class GrammarExercisesTabController implements Initializable {
 
     @FXML GridPane examplesPane;
+    @FXML Label messageLabel;
+
+    private static final int NUMBER_OF_EXAMPLES = 5;
 
     private ArrayList<GrammarTask> taskList;
 
@@ -65,6 +78,7 @@ public class GrammarExercisesTabController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         examplesPane.getChildren().clear();
         taskList = new ArrayList<>();
+        messageLabel.setText("");
 
         fillTaskList();
         fillExamplesPane();
@@ -76,6 +90,10 @@ public class GrammarExercisesTabController implements Initializable {
     }
 
     private void fillExamplesPane(){
+
+        /*for(int i = 0; i < NUMBER_OF_EXAMPLES; i++){
+
+        }*/
 
         HBox firstExample = getExampleContainer("1", "The shops in poland",
                 "very early", taskList.get(0));
@@ -105,5 +123,17 @@ public class GrammarExercisesTabController implements Initializable {
         exampleContainer.getChildren().add(grammarTask.getCorrectAnswer());
 
         return exampleContainer;
+    }
+
+    @FXML
+    public void checkAnswers(){
+        for(GrammarTask task : taskList){
+            task.checkAnswer();
+        }
+    }
+
+    private void setMessageLabel(Color color, String text){
+        messageLabel.setTextFill(color);
+        messageLabel.setText(text);
     }
 }

@@ -91,8 +91,8 @@
             </GridPane>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <Button mnemonicParsing="false" text="Sprawdź" />
-                  <Label text="Label" />
+                  <Button mnemonicParsing="false" onAction="#checkAnswers" text="Sprawdź" />
+                  <Label fx:id="messageLabel" text="Label" />
                </children>
                <VBox.margin>
                   <Insets />
