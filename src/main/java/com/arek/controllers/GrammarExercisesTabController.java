@@ -11,6 +11,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -58,27 +59,51 @@ public class GrammarExercisesTabController implements Initializable {
 
     @FXML GridPane examplesPane;
 
+    private ArrayList<GrammarTask> taskList;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         examplesPane.getChildren().clear();
+        taskList = new ArrayList<>();
 
-        GrammarTask firstTask = new GrammarTask("close");
+        fillTaskList();
+        fillExamplesPane();
+    }
+
+    private void fillTaskList(){
+        taskList.add(new GrammarTask("open"));
+        taskList.add(new GrammarTask("close"));
+    }
+
+    private void fillExamplesPane(){
+
+        HBox firstExample = getExampleContainer("1", "The shops in poland",
+                "very early", taskList.get(0));
+
+        HBox secondExample = getExampleContainer("2", "Shops in poland",
+                "very late", taskList.get(1));
+
+        examplesPane.add(firstExample, 0, 0);
+        examplesPane.add(secondExample, 0, 1);
+    }
+
+    private HBox getExampleContainer(String id, String firstSentence,
+                                     String secondSentence, GrammarTask grammarTask){
 
         HBox exampleContainer = new HBox();
         exampleContainer.setSpacing(10);
         exampleContainer.setAlignment(Pos.CENTER_LEFT);
 
-        Label counter = new Label("1.");
-        Label firstPart = new Label("The shop");
-        Label secondPart = new Label("often");
+        Label exampleId = new Label(id);
+        Label firstPart = new Label(firstSentence);
+        Label secondPart = new Label(secondSentence);
 
-        exampleContainer.getChildren().add(counter);
+        exampleContainer.getChildren().add(exampleId);
         exampleContainer.getChildren().add(firstPart);
-        exampleContainer.getChildren().add(firstTask.getAnswerField());
+        exampleContainer.getChildren().add(grammarTask.getAnswerField());
         exampleContainer.getChildren().add(secondPart);
-        exampleContainer.getChildren().add(firstTask.getCorrectAnswer());
+        exampleContainer.getChildren().add(grammarTask.getCorrectAnswer());
 
-        examplesPane.add(exampleContainer, 0, 0);
-
+        return exampleContainer;
     }
 }
