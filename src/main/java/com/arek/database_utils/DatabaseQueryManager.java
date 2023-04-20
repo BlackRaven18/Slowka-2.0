@@ -389,7 +389,7 @@ public class DatabaseQueryManager {
         }
     }
 
-    private ArrayList<GrammarExercise> getGrammarExercises(){
+    public static ArrayList<GrammarExercise> getGrammarExercises(){
         String query = "SELECT * FROM GRAMMAR_EXERCISES;";
 
         ArrayList<GrammarExercise> exercisesList = new ArrayList<>();
