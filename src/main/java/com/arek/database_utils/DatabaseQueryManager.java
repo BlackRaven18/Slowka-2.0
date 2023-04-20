@@ -389,6 +389,30 @@ public class DatabaseQueryManager {
         }
     }
 
+    private ArrayList<GrammarExercise> getGrammarExercises(){
+        String query = "SELECT * FROM GRAMMAR_EXERCISES;";
+
+        ArrayList<GrammarExercise> exercisesList = new ArrayList<>();
+
+        QueryResult queryResult = getQueryResult(query);
+
+        if (!queryResult.isEmpty()) {
+            for (int i = 0; i < queryResult.getQueryLines(); i++) {
+                int id = Integer.parseInt(queryResult.getQueryLine(i).get(0));
+                String firstSentence = queryResult.getQueryLine(i).get(1);
+                String secondSentence = queryResult.getQueryLine(i).get(2);
+                String hint = queryResult.getQueryLine(i).get(3);
+                String correctAnswer = queryResult.getQueryLine(i).get(4);
+
+                exercisesList.add(new GrammarExercise(id, firstSentence, secondSentence, hint, correctAnswer));
+
+            }
+        }
+
+        return exercisesList;
+    }
+
+
 
 
     public static void changeToSpanish(){
