@@ -1,5 +1,7 @@
 package com.arek.controllers;
 
+import com.arek.database_utils.DatabaseQueryManager;
+import com.arek.database_utils.GrammarExercise;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -17,26 +19,48 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 
-class GrammarTask{
+class TaskEntry{
+    private HBox entryContainer;
     private TextField answerField;
-    private Label correctAnswer;
+    private Label correctAnswerLabel;
 
-    public GrammarTask(){
-        answerField = new TextField();
-        correctAnswer = new Label();
-        correctAnswer.setFont(Font.font("Calibri", FontWeight.BOLD, 14));
+    private GrammarExercise exerciseData;
+
+
+    public TaskEntry(String id, GrammarExercise exerciseData){
+        this.exerciseData = exerciseData;
+        this.answerField = new TextField();
+        this.correctAnswerLabel = new Label(exerciseData.getHint());
+                // StringBuilder().append("").append(correctAnswer).append("").toString());
+        this.correctAnswerLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 14));
+
+        entryContainer = createEntryContainer(id, exerciseData.getFirstSentence(),
+                exerciseData.getSecondSentence());
     }
 
-    public GrammarTask(String correctAnswer){
-        this.answerField = new TextField();
-        this.correctAnswer = new Label(
-                new StringBuilder().append("").append(correctAnswer).append("").toString());
-        this.correctAnswer.setFont(Font.font("Calibri", FontWeight.BOLD, 14));
+    private HBox createEntryContainer(String id, String firstSentence,
+                                     String secondSentence){
+
+        HBox exampleContainer = new HBox();
+        exampleContainer.setSpacing(10);
+        exampleContainer.setAlignment(Pos.CENTER_LEFT);
+
+        Label exampleId = new Label(id);
+        Label firstPart = new Label(firstSentence);
+        Label secondPart = new Label(secondSentence);
+
+        exampleContainer.getChildren().add(exampleId);
+        exampleContainer.getChildren().add(firstPart);
+        exampleContainer.getChildren().add(answerField);
+        exampleContainer.getChildren().add(secondPart);
+        exampleContainer.getChildren().add(correctAnswerLabel);
+
+        return exampleContainer;
     }
 
     private boolean isAnswerCorrect(){
         return answerField.getText().toLowerCase().trim().equals(
-                correctAnswer.getText().toLowerCase().trim());
+                exerciseData.getCorrectAnswer().toLowerCase().trim());
     }
 
     public void checkAnswer(){
@@ -56,12 +80,16 @@ class GrammarTask{
         this.answerField = answerField;
     }
 
-    public Label getCorrectAnswer() {
-        return correctAnswer;
+    public Label getCorrectAnswerLabel() {
+        return correctAnswerLabel;
     }
 
-    public void setCorrectAnswer(Label correctAnswer) {
-        this.correctAnswer = correctAnswer;
+    public void setCorrectAnswerLabel(Label correctAnswer) {
+        this.correctAnswerLabel = correctAnswer;
+    }
+
+    public HBox getEntryContainer() {
+        return entryContainer;
     }
 }
 
@@ -72,62 +100,52 @@ public class GrammarExercisesTabController implements Initializable {
 
     private static final int NUMBER_OF_EXAMPLES = 5;
 
-    private ArrayList<GrammarTask> taskList;
+    private ArrayList<TaskEntry> taskEntryList;
+    private ArrayList<GrammarExercise> exercisesList;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         examplesPane.getChildren().clear();
-        taskList = new ArrayList<>();
+        taskEntryList = new ArrayList<>();
+        exercisesList = new ArrayList<>();
         messageLabel.setText("");
 
-        fillTaskList();
+        fillExercisesList();
         fillExamplesPane();
     }
 
-    private void fillTaskList(){
-        taskList.add(new GrammarTask("open"));
-        taskList.add(new GrammarTask("close"));
+    private void fillExercisesList(){
+        exercisesList = DatabaseQueryManager.getGrammarExercises();
     }
+
 
     private void fillExamplesPane(){
 
-        /*for(int i = 0; i < NUMBER_OF_EXAMPLES; i++){
+        for(int i = 0; i < NUMBER_OF_EXAMPLES; i++){
+            if(!exercisesList.isEmpty()){
+                TaskEntry entry = new TaskEntry(String.valueOf(i + 1), exercisesList.get(i));
+                taskEntryList.add(entry);
+                examplesPane.add(entry.getEntryContainer(), 0, i);
+            }else{
+                fillExercisesList();
+            }
+        }
 
-        }*/
-
-        HBox firstExample = getExampleContainer("1", "The shops in poland",
-                "very early", taskList.get(0));
+        /*HBox firstExample = getExampleContainer("1", "The shops in poland",
+                "very early", taskEntryList.get(0));
 
         HBox secondExample = getExampleContainer("2", "Shops in poland",
-                "very late", taskList.get(1));
+                "very late", taskEntryList.get(1));
 
         examplesPane.add(firstExample, 0, 0);
-        examplesPane.add(secondExample, 0, 1);
+        examplesPane.add(secondExample, 0, 1);*/
     }
 
-    private HBox getExampleContainer(String id, String firstSentence,
-                                     String secondSentence, GrammarTask grammarTask){
 
-        HBox exampleContainer = new HBox();
-        exampleContainer.setSpacing(10);
-        exampleContainer.setAlignment(Pos.CENTER_LEFT);
-
-        Label exampleId = new Label(id);
-        Label firstPart = new Label(firstSentence);
-        Label secondPart = new Label(secondSentence);
-
-        exampleContainer.getChildren().add(exampleId);
-        exampleContainer.getChildren().add(firstPart);
-        exampleContainer.getChildren().add(grammarTask.getAnswerField());
-        exampleContainer.getChildren().add(secondPart);
-        exampleContainer.getChildren().add(grammarTask.getCorrectAnswer());
-
-        return exampleContainer;
-    }
 
     @FXML
     public void checkAnswers(){
-        for(GrammarTask task : taskList){
+        for(TaskEntry task : taskEntryList){
             task.checkAnswer();
         }
     }
