@@ -201,6 +201,11 @@ public class GrammarExercisesTabController implements Initializable {
     }
 
     @FXML
+    public void refreshExercisesList() {
+        restart();
+    }
+
+    @FXML
     public void handleKeyPressedEvents(KeyEvent event){
 
         if(event.getCode().equals(KeyCode.ENTER)){

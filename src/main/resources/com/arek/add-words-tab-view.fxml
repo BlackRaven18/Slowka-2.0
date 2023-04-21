@@ -10,6 +10,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -107,11 +109,19 @@
             <Separator orientation="VERTICAL" prefHeight="200.0" />
             <VBox HBox.hgrow="SOMETIMES">
                <children>
-                  <TextField fx:id="searchField" onKeyTyped="#updateTableWithSearchResult" promptText="szukaj">
+                  <HBox spacing="10.0">
                      <VBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </VBox.margin>
-                  </TextField>
+                     <children>
+                        <TextField fx:id="searchField" onKeyTyped="#updateTableWithSearchResult" prefHeight="26.0" prefWidth="326.0" promptText="szukaj" HBox.hgrow="ALWAYS" />
+                        <ImageView fitHeight="25.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/search_icon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
                   <Separator prefWidth="200.0" />
                   <TableView fx:id="wordsAndTranslationsTable" onMouseClicked="#selectWordTranslationTableRow" prefHeight="480.0" prefWidth="416.0" stylesheets="@table-view-style.css" VBox.vgrow="ALWAYS">
                      <columns>
