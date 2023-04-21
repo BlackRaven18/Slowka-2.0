@@ -47,3 +47,7 @@
 .modify_button:pressed{
     -fx-translate-y: 2px;
 }
+
+.bar{
+    -fx-background-color: rgb(244, 43, 107);
+}

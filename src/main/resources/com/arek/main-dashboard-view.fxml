@@ -23,7 +23,7 @@
       </Tab>
       <Tab text="Ćwiczenia">
           <content>
-              <fx:include source="grammar-exercises-tab.fxml"/>
+              <fx:include source="grammar-exercises-tab.fxml" />
           </content>
       </Tab>
 
@@ -42,6 +42,11 @@
           <fx:include fx:id="optionsTab" source="options-tab-view.fxml" />
       </content>
         </Tab>
+      <Tab text="Pomoc">
+        <content>
+            <fx:include source="help-tab.fxml" />
+        </content>
+      </Tab>
   </tabs>
    <padding>
       <Insets bottom="10.0" />
