@@ -2,18 +2,24 @@ package com.arek.controllers;
 
 import com.arek.database_utils.DatabaseQueryManager;
 import com.arek.database_utils.GrammarExercise;
+import com.arek.language_learning_app.AppOptions;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,17 +30,30 @@ import java.util.ResourceBundle;
 class TaskEntry{
     private HBox entryContainer;
     private TextField answerField;
-    private Label correctAnswerLabel;
+    private Label hintLabel;
+    private Tooltip hintLabelTooltip;
 
     private GrammarExercise exerciseData;
 
+    private AppOptions options;
+
 
     public TaskEntry(String id, GrammarExercise exerciseData){
+        options = AppOptions.getInstance();
+
         this.exerciseData = exerciseData;
         this.answerField = new TextField();
-        this.correctAnswerLabel = new Label(exerciseData.getHint());
-                // StringBuilder().append("").append(correctAnswer).append("").toString());
-        this.correctAnswerLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 14));
+        this.answerField.setFont(Font.font("Calibri", FontWeight.NORMAL, 16));
+        this.answerField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            options.setLastFocusedTextField(answerField);
+            options.setLastFocusedTextFieldCaretPosition(answerField.getCaretPosition());
+        });
+
+        this.hintLabel = new Label(exerciseData.getHint());
+        this.hintLabelTooltip = new Tooltip(exerciseData.getCorrectAnswer());
+        this.hintLabelTooltip.setShowDelay(Duration.seconds(0.2));
+        this.hintLabel.setTooltip(hintLabelTooltip);
+        this.hintLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 16));
 
         entryContainer = createEntryContainer(id, exerciseData.getFirstSentence(),
                 exerciseData.getSecondSentence());
@@ -51,11 +70,15 @@ class TaskEntry{
         Label firstPart = new Label(firstSentence);
         Label secondPart = new Label(secondSentence);
 
+        exampleId.setFont(Font.font("Calibri", FontWeight.NORMAL, 16));
+        firstPart.setFont(Font.font("Calibri", FontWeight.NORMAL, 16));
+        secondPart.setFont(Font.font("Calibri", FontWeight.NORMAL, 16));
+
         exampleContainer.getChildren().add(exampleId);
         exampleContainer.getChildren().add(firstPart);
         exampleContainer.getChildren().add(answerField);
         exampleContainer.getChildren().add(secondPart);
-        exampleContainer.getChildren().add(correctAnswerLabel);
+        exampleContainer.getChildren().add(hintLabel);
 
         return exampleContainer;
     }
@@ -84,12 +107,12 @@ class TaskEntry{
         this.answerField = answerField;
     }
 
-    public Label getCorrectAnswerLabel() {
-        return correctAnswerLabel;
+    public Label getHintLabel() {
+        return hintLabel;
     }
 
-    public void setCorrectAnswerLabel(Label correctAnswer) {
-        this.correctAnswerLabel = correctAnswer;
+    public void setHintLabel(Label hintLabel) {
+        this.hintLabel = hintLabel;
     }
 
     public HBox getEntryContainer() {
@@ -99,8 +122,11 @@ class TaskEntry{
 
 public class GrammarExercisesTabController implements Initializable {
 
+    @FXML private SpanishAccentsBoxController spanishAccentsBoxController;
+
     @FXML GridPane examplesPane;
     @FXML Label messageLabel;
+    @FXML MenuButton selectLanguageButton;
 
     private static final int NUMBER_OF_EXAMPLES = 5;
 
@@ -109,6 +135,18 @@ public class GrammarExercisesTabController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        examplesPane.getChildren().clear();
+        examplesPane.setVgap(10);
+
+        taskEntryList = new ArrayList<>();
+        exercisesList = new ArrayList<>();
+        messageLabel.setText("");
+
+        fillExercisesList();
+        fillExamplesPane();
+    }
+
+    private void restart(){
         examplesPane.getChildren().clear();
         taskEntryList = new ArrayList<>();
         exercisesList = new ArrayList<>();
@@ -130,7 +168,7 @@ public class GrammarExercisesTabController implements Initializable {
 
         while(i < NUMBER_OF_EXAMPLES){
             if(!exercisesList.isEmpty()){
-                int randomNumber = randomGenerator.nextInt(exercisesList.size() - 1);
+                int randomNumber = randomGenerator.nextInt(exercisesList.size());
                 TaskEntry entry = new TaskEntry(String.valueOf(i + 1), exercisesList.get(randomNumber));
                 taskEntryList.add(entry);
                 examplesPane.add(entry.getEntryContainer(), 0, i);
@@ -141,16 +179,6 @@ public class GrammarExercisesTabController implements Initializable {
             }
             i++;
         }
-        /*for(int i = 0; i < NUMBER_OF_EXAMPLES; i++){
-            if(!exercisesList.isEmpty()){
-                TaskEntry entry = new TaskEntry(String.valueOf(i + 1), exercisesList.get(i));
-                taskEntryList.add(entry);
-                examplesPane.add(entry.getEntryContainer(), 0, i);
-            }else{
-                fillExercisesList();
-            }
-
-        }*/
     }
 
 
@@ -184,5 +212,24 @@ public class GrammarExercisesTabController implements Initializable {
     private void setMessageLabel(Color color, String text){
         messageLabel.setTextFill(color);
         messageLabel.setText(text);
+    }
+
+
+
+    @FXML
+    public void changeToSpanish(){
+        DatabaseQueryManager.changeToSpanish();
+        spanishAccentsBoxController.setVisible(true);
+        selectLanguageButton.setText("Hiszpański");
+        restart();
+
+    }
+
+    @FXML
+    public void changeToEnglish(){
+        DatabaseQueryManager.changeToEnglish();
+        spanishAccentsBoxController.setVisible(false);
+        selectLanguageButton.setText("Angielski");
+        restart();
     }
 }
