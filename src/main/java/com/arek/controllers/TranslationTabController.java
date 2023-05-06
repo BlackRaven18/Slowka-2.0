@@ -18,6 +18,9 @@ import java.util.ResourceBundle;
 
 public class TranslationTabController implements Initializable {
 
+    private final String CORRECT_ANSWER_MESSAGE = "Tłumaczenie poprawne!";
+    private final String WRONG_ANSWER_MESSAGE = "Tłumaczenie niepoprawne!";
+
     private WordAndTranslationsManager wordAndTranslationsManager;
     private Languages language;
     private TranslationOrder translationOrder;
@@ -115,7 +118,7 @@ public class TranslationTabController implements Initializable {
         }
 
         if(wordAndTranslationsManager.checkTranslation(wordLabel.getText(), translationField.getText())){
-            setMessageLabel(Color.GREEN, "OK!!!");
+            setMessageLabel(Color.GREEN, CORRECT_ANSWER_MESSAGE);
             translationField.setText("");
             loadWordLabel();
 
@@ -124,7 +127,7 @@ public class TranslationTabController implements Initializable {
             }
 
         } else{
-            setMessageLabel(Color.RED, "NIE OK!!!");
+            setMessageLabel(Color.RED, WRONG_ANSWER_MESSAGE);
         }
     }
 
