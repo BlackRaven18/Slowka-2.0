@@ -11,14 +11,20 @@ public class DatabaseQueryManager {
 
     private static String databaseURL = DatabaseInfoManager.SPANISH_POLISH_DATABASE_URL;
 
-    private static final String GET_WORDS_WITH_TRANSLATIONS ="SELECT sl.slowo, tl.tlumaczenie " +
-            "FROM SLOWO sl, TLUMACZENIE tl " +
-            "WHERE sl.id_slowa = tl.id_slowa " +
-            "ORDER BY sl.slowo;";
+    private static final String GET_WORDS_WITH_TRANSLATIONS = """
+                    SELECT sl.slowo, tl.tlumaczenie
+                    FROM SLOWO sl, TLUMACZENIE tl
+                    WHERE sl.id_slowa = tl.id_slowa
+                    AND sl.used LIKE '%true%'
+                    ORDER BY sl.slowo;
+            """;
 
-    private static final String GET_WORDS_WITH_TRANSLATIONS_REVERSE = "SELECT tl.tlumaczenie, sl.slowo\n" +
-            "FROM slowo sl, tlumaczenie tl\n" +
-            "WHERE sl.id_slowa = tl.id_slowa;\n";
+    private static final String GET_WORDS_WITH_TRANSLATIONS_REVERSE = """
+            SELECT sl.slowo, tl.tlumaczenie
+            FROM SLOWO sl, TLUMACZENIE tl
+            WHERE sl.id_slowa = tl.id_slowa
+            AND sl.used LIKE '%true%'
+            """;
 
 
     public static QueryResult getQueryResult(String query){
@@ -142,7 +148,7 @@ public class DatabaseQueryManager {
         ArrayList<WordDetails> wordDetailsList = new ArrayList<>();
         QueryResult queryResult;
 
-        String query = "SELECT s.slowo, tl.tlumaczenie, typ.typ, kat.kategoria " +
+        String query = "SELECT s.used, s.slowo, tl.tlumaczenie, typ.typ, kat.kategoria " +
                 "FROM SLOWO s, TLUMACZENIE tl, TYP typ, KATEGORIA kat " +
                 "WHERE s.id_slowa = tl.id_slowa " +
                 "    AND s.id_typu = typ.id_typu" +
@@ -150,12 +156,13 @@ public class DatabaseQueryManager {
 
         queryResult = getQueryResult(query);
         for(int i = 0; i < queryResult.getQueryLines(); i++){
-            String word = queryResult.getQueryLine(i).get(0);
-            String translation = queryResult.getQueryLine(i).get(1);
-            String type = queryResult.getQueryLine(i).get(2);
-            String category = queryResult.getQueryLine(i).get(3);
+            boolean isUsed = Boolean.parseBoolean(queryResult.getQueryLine(i).get(0));
+            String word = queryResult.getQueryLine(i).get(1);
+            String translation = queryResult.getQueryLine(i).get(2);
+            String type = queryResult.getQueryLine(i).get(3);
+            String category = queryResult.getQueryLine(i).get(4);
 
-            wordDetailsList.add(new WordDetails(word, translation, type, category));
+            wordDetailsList.add(new WordDetails(isUsed, word, translation, type, category));
         }
         return wordDetailsList;
     }
@@ -190,8 +197,8 @@ public class DatabaseQueryManager {
         int typeId = getTypeId(wordDetails.getType());
         int categoryId = getCategoryId(wordDetails.getCategory());
 
-        String query = String.format("INSERT INTO SLOWO VALUES(%d, '%s', %d, %d);",
-                newWordId, wordDetails.getWord(), typeId, categoryId);
+        String query = String.format("INSERT INTO SLOWO VALUES(%d, '%s', %d, %d, '%s');",
+                newWordId, wordDetails.getWord(), typeId, categoryId, true);
 
         executeQuery(query);
     }
@@ -410,6 +417,14 @@ public class DatabaseQueryManager {
         }
 
         return exercisesList;
+    }
+    public static void changeIsUsed(boolean isUsed, String word){
+        String changeIsUsedQuery = String.format(
+                "UPDATE SLOWO SET used = '%s' WHERE slowo LIKE '%s';",
+                isUsed, word);
+
+        executeQuery(changeIsUsedQuery);
+
     }
 
 
