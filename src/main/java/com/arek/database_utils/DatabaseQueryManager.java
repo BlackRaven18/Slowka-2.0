@@ -142,7 +142,7 @@ public class DatabaseQueryManager {
         ArrayList<WordDetails> wordDetailsList = new ArrayList<>();
         QueryResult queryResult;
 
-        String query = "SELECT s.slowo, tl.tlumaczenie, typ.typ, kat.kategoria " +
+        String query = "SELECT s.used, s.slowo, tl.tlumaczenie, typ.typ, kat.kategoria " +
                 "FROM SLOWO s, TLUMACZENIE tl, TYP typ, KATEGORIA kat " +
                 "WHERE s.id_slowa = tl.id_slowa " +
                 "    AND s.id_typu = typ.id_typu" +
@@ -150,12 +150,13 @@ public class DatabaseQueryManager {
 
         queryResult = getQueryResult(query);
         for(int i = 0; i < queryResult.getQueryLines(); i++){
-            String word = queryResult.getQueryLine(i).get(0);
-            String translation = queryResult.getQueryLine(i).get(1);
-            String type = queryResult.getQueryLine(i).get(2);
-            String category = queryResult.getQueryLine(i).get(3);
+            boolean isUsed = Boolean.parseBoolean(queryResult.getQueryLine(i).get(0));
+            String word = queryResult.getQueryLine(i).get(1);
+            String translation = queryResult.getQueryLine(i).get(2);
+            String type = queryResult.getQueryLine(i).get(3);
+            String category = queryResult.getQueryLine(i).get(4);
 
-            wordDetailsList.add(new WordDetails(word, translation, type, category));
+            wordDetailsList.add(new WordDetails(isUsed, word, translation, type, category));
         }
         return wordDetailsList;
     }

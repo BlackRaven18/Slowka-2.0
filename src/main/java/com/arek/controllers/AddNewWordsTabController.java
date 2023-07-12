@@ -32,6 +32,8 @@ public class AddNewWordsTabController implements Initializable {
     @FXML private TextField wordField, translationField, searchField;
 
     @FXML private TableView<WordDetails> wordsAndTranslationsTable;
+
+    @FXML private TableColumn<WordDetails, CheckBox> usedColumn;
     @FXML private TableColumn<WordDetails, String> wordsColumn;
     @FXML private TableColumn<WordDetails, String> translationsColumn;
     @FXML private TableColumn<WordDetails, String> typeColumn;
@@ -64,6 +66,9 @@ public class AddNewWordsTabController implements Initializable {
 
         wordDetailsObservableList = FXCollections.observableArrayList(wordDetailsList);
 
+        usedColumn.setStyle("-fx-alignment: CENTER;");
+
+        usedColumn.setCellValueFactory(new PropertyValueFactory<>("isUsedCheckbox"));
         wordsColumn.setCellValueFactory(new PropertyValueFactory<>("word"));
         translationsColumn.setCellValueFactory(new PropertyValueFactory<>("translation"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
@@ -169,7 +174,7 @@ public class AddNewWordsTabController implements Initializable {
             return null;
         }
 
-        return new WordDetails(wordsColumn.getCellData(index), translationsColumn.getCellData(index),
+        return new WordDetails(usedColumn.getCellData(index).isSelected(), wordsColumn.getCellData(index), translationsColumn.getCellData(index),
                     typeColumn.getCellData(index), categoryColumn.getCellData(index));
     }
 
@@ -180,7 +185,7 @@ public class AddNewWordsTabController implements Initializable {
 
         if(!wordField.getText().isEmpty() && !translationField.getText().isEmpty()) {
             if(DatabaseQueryManager.addWordDetails(
-                    new WordDetails(wordField.getText(), translationField.getText(), typeButton.getText(), categoryButton.getText()))
+                    new WordDetails(true, wordField.getText(), translationField.getText(), typeButton.getText(), categoryButton.getText()))
                 == DatabaseResponse.DB_ALREADY_IN){
                 setMessageLabel(Color.BLACK, "Słówko z tym tłumaczeniem jest już w bazie");
                 return;
@@ -205,7 +210,7 @@ public class AddNewWordsTabController implements Initializable {
 
         if(!wordField.getText().isEmpty() && !translationField.getText().isEmpty()){
             if(DatabaseQueryManager.deleteWordDetails(
-                    new WordDetails(wordField.getText(), translationField.getText(), typeButton.getText(), categoryButton.getText()))
+                    new WordDetails(true,  wordField.getText(), translationField.getText(), typeButton.getText(), categoryButton.getText()))
                     == DatabaseResponse.DB_NOT_FOUND){
                 setMessageLabel(Color.RED, "Nie znaleziono takiego słówka lub tłumaczenia!");
                 return;
@@ -232,7 +237,7 @@ public class AddNewWordsTabController implements Initializable {
             }
 
             WordDetails newWordAndTranslation = new WordDetails(
-                    wordField.getText(), translationField.getText()
+                    true, wordField.getText(), translationField.getText()
                     , typeButton.getText(), categoryButton.getText());
 
             if(DatabaseQueryManager.changeWordDetails(oldWordAndTranslation, newWordAndTranslation)
