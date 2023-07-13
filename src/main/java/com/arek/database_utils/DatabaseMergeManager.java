@@ -16,7 +16,7 @@ public class DatabaseMergeManager {
     ArrayList<Translation> newTranslationTable;
 
 
-    public DatabaseMergeManager(Languages language, File newDatabaseFile){
+    public DatabaseMergeManager(Languages language, File newDatabaseFile) {
         this.language = language;
         this.newDatabaseFile = newDatabaseFile;
 
@@ -31,15 +31,15 @@ public class DatabaseMergeManager {
         newTranslationTable = loadTranslationTable();
     }
 
-    private ArrayList<Word> loadWordTable(){
+    private ArrayList<Word> loadWordTable() {
         return DatabaseQueryManager.getWords();
     }
 
-    private ArrayList<Translation> loadTranslationTable(){
+    private ArrayList<Translation> loadTranslationTable() {
         return DatabaseQueryManager.getTranslations();
     }
 
-    public void mergeDatabases(){
+    public void mergeDatabases() {
         //1. update src Translations Table Primary Keys
         updateTranslationTablePrimaryKeys();
 
@@ -51,7 +51,7 @@ public class DatabaseMergeManager {
 
         //4. Add merged data to database
 
-        switch(language){
+        switch (language) {
             case SPANISH:
                 DatabaseQueryManager.changeToSpanish();
                 break;
@@ -63,10 +63,10 @@ public class DatabaseMergeManager {
         addMergedDataToDatabase();
     }
 
-    private void updateTranslationTablePrimaryKeys(){
+    private void updateTranslationTablePrimaryKeys() {
         int counter = 0;
 
-        for(Translation translation : srcTranslationTable){
+        for (Translation translation : srcTranslationTable) {
             translation.setTranslationID(counter);
             counter++;
         }
@@ -88,20 +88,20 @@ public class DatabaseMergeManager {
         }
     }
 
-    private void addWordsAndTranslationsFromNewDatabase(){
+    private void addWordsAndTranslationsFromNewDatabase() {
 
-        for(Word newWord : newWordTable){
+        for (Word newWord : newWordTable) {
 
             // if new word is already in the souce table
             Word oldWord = isWordInWordTable(srcWordTable, newWord.getWord());
-            if(oldWord != null){
+            if (oldWord != null) {
 
                 ArrayList<Translation> newWordTranslations = getWordTranslationList(newWord, newTranslationTable);
 
-                for(Translation translation : newWordTranslations){
+                for (Translation translation : newWordTranslations) {
 
                     //if this translations does not existing in src database add it
-                    if(!isTranslationInTranslationTable(translation, srcTranslationTable)){
+                    if (!isTranslationInTranslationTable(translation, srcTranslationTable)) {
                         Translation newTranslation = new Translation(srcTranslationTable.size(),
                                 translation.getTranslation(), oldWord.getWordID());
                         srcTranslationTable.add(newTranslation);
@@ -109,17 +109,23 @@ public class DatabaseMergeManager {
                 }
 
                 // if new word does not exist is src database add it and add translations
-            } else{
+            } else {
 
                 int newWordId = srcWordTable.size();
 
                 //add new word
-                srcWordTable.add(new Word(newWordId, newWord.getWord()));
+                srcWordTable.add(
+                        new Word(
+                                newWordId,
+                                newWord.getWord(),
+                                newWord.getTypeID(),
+                                newWord.getCategoryID(),
+                                newWord.getIsUsed()));
 
                 //add translations
                 ArrayList<Translation> newWordTranslations = getWordTranslationList(newWord, newTranslationTable);
 
-                for(Translation translation : newWordTranslations){
+                for (Translation translation : newWordTranslations) {
                     srcTranslationTable.add(new Translation(srcTranslationTable.size(),
                             translation.getTranslation(), newWordId));
                 }
@@ -130,10 +136,10 @@ public class DatabaseMergeManager {
     }
 
 
-    private Word isWordInWordTable(ArrayList<Word> wordTable, String wordName){
+    private Word isWordInWordTable(ArrayList<Word> wordTable, String wordName) {
 
-        for(Word word : wordTable){
-            if(word.getWord().equals(wordName)){
+        for (Word word : wordTable) {
+            if (word.getWord().equals(wordName)) {
                 return word;
             }
         }
@@ -141,9 +147,9 @@ public class DatabaseMergeManager {
         return null;
     }
 
-    private boolean isTranslationInTranslationTable(Translation translation, ArrayList<Translation> translationTable){
-        for(Translation tmpTranslation : translationTable){
-            if(tmpTranslation.getTranslation().equals(translation.getTranslation())){
+    private boolean isTranslationInTranslationTable(Translation translation, ArrayList<Translation> translationTable) {
+        for (Translation tmpTranslation : translationTable) {
+            if (tmpTranslation.getTranslation().equals(translation.getTranslation())) {
                 return true;
             }
         }
@@ -151,11 +157,11 @@ public class DatabaseMergeManager {
         return false;
     }
 
-    private ArrayList<Translation> getWordTranslationList(Word word, ArrayList<Translation> translationList){
+    private ArrayList<Translation> getWordTranslationList(Word word, ArrayList<Translation> translationList) {
         ArrayList<Translation> wordTranslationList = new ArrayList<>();
 
-        for(Translation translation : translationList){
-            if(translation.getWordID() == word.getWordID()){
+        for (Translation translation : translationList) {
+            if (translation.getWordID() == word.getWordID()) {
                 wordTranslationList.add(translation);
             }
         }
@@ -163,12 +169,15 @@ public class DatabaseMergeManager {
         return wordTranslationList;
     }
 
-    private void addMergedDataToDatabase(){
+    private void addMergedDataToDatabase() {
+        //TODO: Delete this later
+        for (Word w : srcWordTable) {
+            System.out.println(w.getWordID() + " : " + w.getWord());
+        }
         DatabaseQueryManager.clearDatabase();
         DatabaseQueryManager.addWordsToWordTable(srcWordTable);
         DatabaseQueryManager.addTranslationsToTranslationTable(srcTranslationTable);
     }
-
 
 
 }
