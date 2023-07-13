@@ -73,7 +73,13 @@ public class DatabaseQueryManager {
         ArrayList<Word> wordList = new ArrayList<>();
         for(int i = 0; i < queryResult.getQueryLines(); i++){
             ArrayList<String> line = queryResult.getQueryLine(i);
-            Word word = new Word(Integer.parseInt(line.get(0)), line.get(1));
+            Word word = new Word(
+                    Integer.parseInt(line.get(0)),
+                    line.get(1),
+                    Integer.parseInt(line.get(2)),
+                    Integer.parseInt(line.get(3)),
+                    line.get(4)
+                    );
             wordList.add(word);
         }
 
@@ -164,6 +170,11 @@ public class DatabaseQueryManager {
 
             wordDetailsList.add(new WordDetails(isUsed, word, translation, type, category));
         }
+        //TODO: delete this later
+        for (WordDetails w : wordDetailsList) {
+            System.out.println(w.word + " : " + w.translation);
+        }
+
         return wordDetailsList;
     }
 
@@ -368,7 +379,13 @@ public class DatabaseQueryManager {
             Statement statement = connection.createStatement()){
 
             for(Word word : wordList){
-                query = String.format("INSERT INTO SLOWO VALUES (%d, '%s');", word.getWordID(), word.getWord());
+                query = String.format("INSERT INTO SLOWO VALUES (%d, '%s', %d, %d, '%s');",
+                        word.getWordID(),
+                        word.getWord(),
+                        word.getTypeID(),
+                        word.getCategoryID(),
+                        word.getIsUsed()
+                );
                 statement.executeUpdate(query);
             }
 
