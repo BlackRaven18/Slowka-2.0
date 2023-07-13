@@ -5,6 +5,8 @@ import com.arek.language_learning_app.AppOptions;
 import com.arek.language_learning_app.Languages;
 import com.arek.language_learning_app.TranslationOrder;
 import com.arek.language_learning_app.WordAndTranslationsManager;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -34,7 +36,7 @@ public class TranslationTabController implements Initializable {
     @FXML private Tooltip wordLabelTooltip;
     @FXML private TextField translationField;
     @FXML private MenuButton selectLanguageMenu;
-    @FXML private Button startClockButton, stopClockButton;
+    @FXML private Button startClockButton, stopClockButton, checkButton;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -42,6 +44,7 @@ public class TranslationTabController implements Initializable {
         language = Languages.SPANISH;
         translationOrder = TranslationOrder.NORMAL;
         wordAndTranslationsManager = new WordAndTranslationsManager(language, translationOrder);
+
 
         loadWordLabel();
         wordLabelTooltip.setShowDelay(Duration.seconds(0.2));

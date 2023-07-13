@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="addNewWordsTab" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.AddNewWordsTabController">
+<BorderPane fx:id="addNewWordsTab" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.AddNewWordsTabController">
    <center>
       <HBox prefHeight="480.0" prefWidth="304.0" BorderPane.alignment="CENTER">
          <children>
@@ -125,6 +125,7 @@
                   <Separator prefWidth="200.0" />
                   <TableView fx:id="wordsAndTranslationsTable" onMouseClicked="#selectWordTranslationTableRow" prefHeight="480.0" prefWidth="416.0" stylesheets="@table-view-style.css" VBox.vgrow="ALWAYS">
                      <columns>
+                        <TableColumn fx:id="usedColumn" prefWidth="204.0" text="Używane" />
                         <TableColumn fx:id="wordsColumn" prefWidth="204.0" text="Słówko" />
                         <TableColumn fx:id="translationsColumn" prefWidth="202.0" text="Tłumaczenie" />
                         <TableColumn fx:id="typeColumn" prefWidth="202.0" text="Rodzaj" />
