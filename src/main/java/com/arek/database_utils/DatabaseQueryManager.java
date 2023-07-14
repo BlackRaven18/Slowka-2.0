@@ -170,10 +170,6 @@ public class DatabaseQueryManager {
 
             wordDetailsList.add(new WordDetails(isUsed, word, translation, type, category));
         }
-        //TODO: delete this later
-        for (WordDetails w : wordDetailsList) {
-            System.out.println(w.word + " : " + w.translation);
-        }
 
         return wordDetailsList;
     }

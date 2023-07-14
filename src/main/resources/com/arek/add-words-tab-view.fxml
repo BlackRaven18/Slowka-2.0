@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="addNewWordsTab" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.AddNewWordsTabController">
+<BorderPane fx:id="addNewWordsTab" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.AddNewWordsTabController">
    <center>
       <HBox prefHeight="480.0" prefWidth="304.0" BorderPane.alignment="CENTER">
          <children>
