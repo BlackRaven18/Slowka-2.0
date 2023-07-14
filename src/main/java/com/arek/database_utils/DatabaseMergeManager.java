@@ -170,10 +170,6 @@ public class DatabaseMergeManager {
     }
 
     private void addMergedDataToDatabase() {
-        //TODO: Delete this later
-        for (Word w : srcWordTable) {
-            System.out.println(w.getWordID() + " : " + w.getWord());
-        }
         DatabaseQueryManager.clearDatabase();
         DatabaseQueryManager.addWordsToWordTable(srcWordTable);
         DatabaseQueryManager.addTranslationsToTranslationTable(srcTranslationTable);

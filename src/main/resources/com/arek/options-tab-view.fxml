@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="optionsTab" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.OptionsTabController">
+<BorderPane fx:id="optionsTab" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.arek.controllers.OptionsTabController">
    <center>
       <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
